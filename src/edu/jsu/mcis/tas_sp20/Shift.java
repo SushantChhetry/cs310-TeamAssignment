@@ -124,7 +124,8 @@ public class Shift {
         this.shiftLunchDuration = shiftLunchDuration;
     }
     
-    public int getTotalShiftDuration(){
+    // for total shift hours 
+    public int totalShiftDuration(){
         int totalShiftStartTime = (getShiftStart().getHour()*60) + 
                 getShiftStart().getMinute();
         
@@ -136,7 +137,7 @@ public class Shift {
     
     // for Lunch duration (LunchStart - LunchStop)
     
-    public int getLunchDuration(){
+    public int totalLunchDuration(){
         int totalLunchStartTime = (getShiftLunchStart().getHour()*60) +
                 getShiftLunchStart().getMinute();
         
@@ -145,5 +146,21 @@ public class Shift {
         
         return (totalLunchStartTime - totalLunchStopTime);
     }
- 
+    
+    @Override
+    public String toString(){
+        
+        StringBuilder sb = new StringBuilder();
+        sb.append(shiftDescription + ": ").append(shiftStart.toString())
+                .append(" - ");
+        sb.append(shiftStop.toString()).append(" (")
+                .append(totalShiftDuration());
+        sb.append(" minutes); Lunch: ").append(shiftLunchStart.toString())
+                .append(" - ");
+        sb.append(shiftLunchStop.toString()).append(" (")
+                .append(totalLunchDuration()).append(" minutes)");
+        
+        return sb.toString();
+    }
+    
 }
