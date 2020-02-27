@@ -16,22 +16,23 @@ public class Badge {
         
     }
     
-    //creating getter and setter method
-
-    public String getBadgeID() {
-        return badgeID;
-    }
-
-    public void setBadgeID(String badgeID) {
-        this.badgeID = badgeID;
-    }
-
-    public String getBadgeDescription() {
+    public String getDescription(){
         return badgeDescription;
     }
-
-    public void setBadgeDescription(String badgeDescription) {
-        this.badgeDescription = badgeDescription;
+    
+    public String getID(){
+        return badgeID;
     }
-       
+    
+    @Override
+    public String toString(){
+        String string = "";
+        StringBuilder sb = new StringBuilder();
+        sb.append("#");
+        sb.append(this.getID() + " " + "(");
+        sb.append(this.getDescription() + ")");
+        string = sb.toString();
+
+        return string;
+    }   
 }
