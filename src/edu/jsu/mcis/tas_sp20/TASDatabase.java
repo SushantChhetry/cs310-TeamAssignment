@@ -33,11 +33,7 @@ public class TASDatabase {
             if(conn.isValid(0)){
             System.out.println("Connection Successful");
             }
-        
-            /* Close Database Connection */
-            
-            conn.close();
-        
+
         }
         
         catch (Exception e) {
@@ -58,9 +54,6 @@ public class TASDatabase {
     }
     
     
-    
-
-    
     // creating objects 
     
     public Badge getBadge(String badgeid) {
@@ -79,5 +72,7 @@ public class TASDatabase {
         return null;
     }
     
+    public void close() throws SQLException {
+        conn.close();
+    }
 }
-
