@@ -1,6 +1,7 @@
 package edu.jsu.mcis.tas_sp20;
 
 import java.sql.*;
+import java.time.LocalTime;
 
 public class TASDatabase {
     
@@ -61,24 +62,25 @@ public class TASDatabase {
         public Badge getBadge(String badgeid){
         try{
             
-        // prepare statement
-        pstSelect = conn.prepareStatement("SELECT * FROM badge WHERE id = ?");
-        
-        //set params
-        pstSelect.setString(1, badgeid);
-        
-        //execute
-        pstSelect.execute();
-        resultset = pstSelect.getResultSet();
-        
-        //get results
-        resultset.first();
-        String idNum = resultset.getString(1);
-        String name = resultset.getString(2);
-        
-        Badge b = new Badge(name, idNum);
-        
-        return b;
+            // prepare statement
+            pstSelect = conn.prepareStatement("SELECT * FROM badge WHERE id = ?");
+
+            //set params
+            pstSelect.setString(1, badgeid);
+
+            //execute
+            pstSelect.execute();
+            resultset = pstSelect.getResultSet();
+            resultset.first();
+
+            //get results            resultset.first();
+
+            String idNum = resultset.getString(1);
+            String name = resultset.getString(2);
+
+            Badge b = new Badge(name, idNum);
+
+            return b;
         }
         
         catch(Exception e){
@@ -127,35 +129,53 @@ public class TASDatabase {
         
         try{
             
-        // prepare statement
-        pstSelect = conn.prepareStatement("SELECT * FROM shift INNER JOIN employee"
-                + " ON employee.shiftid = shift.id INNER JOIN badge ON badge.id"
-                + " = employee.badgeid WHERE badge.id = ?");
-        
-        //set params
-        pstSelect.setString(1, badge.getID() );
-        
-        //execute
-        pstSelect.execute();
-        resultset = pstSelect.getResultSet();
-        
-        //get results
-        resultset.first();
-        String idNum = resultset.getString(1);
-        String description = resultset.getString(2);
-        String start = resultset.getString(3);
-        String stop = resultset.getString(4);
-        String interval = resultset.getString(5);
-        String gracePeriod = resultset.getString(6);
-        String dock = resultset.getString(7);
-        String lunchStart = resultset.getString(8);
-        String lunchStop = resultset.getString(9);
-        String lunchDeduct = resultset.getString(10);
-        
-        Shift s = new Shift(idNum,description, start, stop, interval, gracePeriod,
-                dock, lunchStart, lunchStop, lunchDeduct);
-        
-        return s;
+            // prepare statement
+            pstSelect = conn.prepareStatement("SELECT * FROM shift INNER JOIN employee"
+                    + " ON employee.shiftid = shift.id INNER JOIN badge ON badge.id"
+                    + " = employee.badgeid WHERE badge.id = ?");
+
+            //set params
+            pstSelect.setString(1, badge.getID() );
+
+            //execute
+            pstSelect.execute();
+            resultset = pstSelect.getResultSet();
+
+            //get results
+            resultset.first();
+
+            String description = resultset.getString("description");
+
+            String start = resultset.getString("start");
+            String[] arrayStart = start.split(":");
+            int startHour = Integer.parseInt(arrayStart[0]);
+            int startMin = Integer.parseInt(arrayStart[1]);
+
+            String stop = resultset.getString("stop");
+            String[] arrayStop = stop.split(":");
+            int stopHour = Integer.parseInt(arrayStop[0]);
+            int stopMin = Integer.parseInt(arrayStop[1]);
+
+            int interval = resultset.getInt("interval");
+            int gracePeriod = resultset.getInt("graceperiod");
+            int dock = resultset.getInt("dock");
+
+            String lunchStart = resultset.getString("lunchstart");
+            String[] arrayLunchStart = lunchStart.split(":");
+            int lunchStartHour = Integer.parseInt(arrayLunchStart[0]);
+            int lunchStartMin = Integer.parseInt(arrayLunchStart[1]);
+
+            String lunchStop = resultset.getString("lunchstop");
+            String[] arrayLunchStop = lunchStop.split(":");
+            int lunchStopHour = Integer.parseInt(arrayLunchStop[0]);
+            int lunchStopMin = Integer.parseInt(arrayLunchStop[1]);
+
+            int lunchDeduct = resultset.getInt("lunchdeduct");
+
+            Shift s = new Shift(description, startHour, startMin, stopHour, stopMin, interval, gracePeriod,
+                    dock, lunchStartHour, lunchStartMin, lunchStopHour, lunchStopMin, lunchDeduct);
+
+            return s;
         }
         
         catch(Exception e){
@@ -169,35 +189,54 @@ public class TASDatabase {
         
         try{
             
-        // prepare statement
-        pstSelect = conn.prepareStatement("SELECT * FROM shift WHERE id = ?");
-        
-        //set params
-        pstSelect.setInt(1, shiftid);
-        
-        //execute
-        pstSelect.execute();
-        resultset = pstSelect.getResultSet();
-        
-        //get results
-        resultset.first();
-        String idNum = resultset.getString(1);
-        String description = resultset.getString(2);
-        String start = resultset.getString(3);
-        String stop = resultset.getString(4);
-        String interval = resultset.getString(5);
-        String gracePeriod = resultset.getString(6);
-        String dock = resultset.getString(7);
-        String lunchStart = resultset.getString(8);
-        String lunchStop = resultset.getString(9);
-        String lunchDeduct = resultset.getString(10);
-        
-        Shift s = new Shift(idNum,description, start, stop, interval, gracePeriod,
-                dock, lunchStart, lunchStop, lunchDeduct);
-        
-        return s;
+            // prepare statement
+            pstSelect = conn.prepareStatement("SELECT * FROM shift WHERE id = ?");
+
+            //set params
+            pstSelect.setInt(1, shiftid);
+
+            //execute
+            pstSelect.execute();
+            resultset = pstSelect.getResultSet();
+
+            //get results
+            resultset.first();
+
+            String description = resultset.getString("description");
+
+            String start = resultset.getString("start");
+            String[] arrayStart = start.split(":");
+            int startHour = Integer.parseInt(arrayStart[0]);
+            int startMin = Integer.parseInt(arrayStart[1]);
+
+            String stop = resultset.getString("stop");
+            String[] arrayStop = stop.split(":");
+            int stopHour = Integer.parseInt(arrayStop[0]);
+            int stopMin = Integer.parseInt(arrayStop[1]);
+
+            int interval = resultset.getInt("interval");
+            int gracePeriod = resultset.getInt("graceperiod");
+            int dock = resultset.getInt("dock");
+
+            String lunchStart = resultset.getString("lunchstart");
+            String[] arrayLunchStart = lunchStart.split(":");
+            int lunchStartHour = Integer.parseInt(arrayLunchStart[0]);
+            int lunchStartMin = Integer.parseInt(arrayLunchStart[1]);
+
+            String lunchStop = resultset.getString("lunchstop");
+            String[] arrayLunchStop = lunchStop.split(":");
+            int lunchStopHour = Integer.parseInt(arrayLunchStop[0]);
+            int lunchStopMin = Integer.parseInt(arrayLunchStop[1]);
+
+            int lunchDeduct = resultset.getInt("lunchdeduct");
+
+            Shift s = new Shift(description, startHour, startMin, stopHour, stopMin, interval, gracePeriod,
+                    dock, lunchStartHour, lunchStartMin, lunchStopHour, lunchStopMin, lunchDeduct);
+
+            return s;
+            
         }
-        
+                
         catch(Exception e){
             System.err.println("** getShift: " + e.toString());
         }
