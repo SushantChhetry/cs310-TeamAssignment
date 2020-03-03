@@ -8,6 +8,7 @@ public class TASDatabase {
     Statement stmt = null;
     PreparedStatement pstSelect = null, pstUpdate = null;
     ResultSet resultset = null;
+    String query;
     ResultSetMetaData metadata = null;
     
     public TASDatabase(){
@@ -58,6 +59,33 @@ public class TASDatabase {
     
     
     // creating objects 
+    /*
+        public Badge getBadge(String badgeid){
+        try{
+            
+        
+        query = "SELECT * FROM badge WHERE id = '" + badgeid + "'";
+        pstSelect = conn.prepareStatement(query);
+        pstSelect.execute();
+        resultset = pstSelect.getResultSet();
+        
+        resultset.first();
+        String idNum = resultset.getString(1);
+        String name = resultset.getString(2);
+        
+        Badge b = new Badge(name, idNum);
+        
+        return b;
+        }
+        
+        catch(Exception e){
+            System.err.println("** getBadge: " + e.toString());
+        }
+
+        return null;
+        
+    }
+    */
     
     public Badge getBadge(String badgeid) throws SQLException {
         
