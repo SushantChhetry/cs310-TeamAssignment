@@ -128,12 +128,9 @@ public class TASDatabase {
         try{
             
         // prepare statement
-        pstSelect = conn.prepareStatement("SELECT shift.id, shift.description,"
-                + " shift.start, shift.stop shift.interval, shift.graceperiod,"
-                + " shift.dock, shift.lunchstart, shift.lunchstop, shift.lunchdeduct"
-                + " FROM shift INNER JOIN employee ON employee.shiftid = shift.id"
-                + " INNER JOIN badge ON badge.id = employee.badgeid WHERE badge.id"
-                + " = ?");
+        pstSelect = conn.prepareStatement("SELECT * FROM shift INNER JOIN employee"
+                + " ON employee.shiftid = shift.id INNER JOIN badge ON badge.id"
+                + " = employee.badgeid WHERE badge.id = ?");
         
         //set params
         pstSelect.setString(1, badge.getID() );
