@@ -5,6 +5,7 @@ import java.sql.*;
 public class TASDatabase {
     
     Connection conn = null;
+    Statement stmt = null;
     PreparedStatement pstSelect = null, pstUpdate = null;
     ResultSet resultset = null;
     ResultSetMetaData metadata = null;
@@ -33,7 +34,8 @@ public class TASDatabase {
             if(conn.isValid(0)){
             System.out.println("Connection Successful");
             }
-
+    
+            
         }
         
         catch (Exception e) {
@@ -52,24 +54,71 @@ public class TASDatabase {
             
         }
     }
+        
     
     
     // creating objects 
     
-    public Badge getBadge(String badgeid) {
-        return null;
+    public Badge getBadge(String badgeid) throws SQLException {
+        
+        /* Execute Query */
+            
+        System.out.println("Creating statement...");
+        stmt = conn.createStatement();
+
+        String sql = "SELECT badge.description FROM badge WHERE id = '" 
+                + badgeid + "'";
+        resultset = stmt.executeQuery(sql);
+        
+        return (Badge)resultset;
     }
     
-    public Punch getPunch(int punchid){
-        return null;
+    public Punch getPunch(int punchid) throws SQLException{
+        
+        /* Execute Query */
+            
+        System.out.println("Creating statement...");
+        stmt = conn.createStatement();
+
+        String sql = "SELECT punch.terminalid, punch.badgeid, punch.originaltimestamp,"
+                + " punch.punchtypeid FROM punch WHERE id = '" + punchid + "'";
+        resultset = stmt.executeQuery(sql);
+        
+        return (Punch)resultset;
     }
     
-    public Shift getShift(Badge badge){
-        return null;
+    public Shift getShift(Badge badge) throws SQLException{
+        
+        /* Execute Query */
+            
+        System.out.println("Creating statement...");
+        stmt = conn.createStatement();
+        
+
+        String sql = "SELECT shift.id, shift.description, shift.start, shift.stop,"
+                + " shift.interval, shift.graceperiod, shift.dock, shift.lunchstart,"
+                + " shift.lunchstop, shift.lunchdeduct FROM shift "
+                + " INNER JOIN employee ON employee.shiftid = shift.id"
+                + " INNER JOIN badge ON badge.id = employee.badgeid"
+                + " WHERE badge.id = '" + badge.getBadgeID() + "'";
+        resultset = stmt.executeQuery(sql);
+        
+        return (Shift)resultset;
     }
     
-    public Shift getShift (int shiftid){
-        return null;
+    public Shift getShift (int shiftid) throws SQLException{
+        
+        /* Execute Query */
+            
+        System.out.println("Creating statement...");
+        stmt = conn.createStatement();
+
+        String sql = "SELECT shift.description, shift.start, shift.stop, shift.interval,"
+                + " shift.graceperiod, shift.dock, shift.lunchstart, shift.lunchstop,"
+                + " shift.lunchdeduct FROM shift WHERE id = '" + shiftid + "'";
+        resultset = stmt.executeQuery(sql);
+        
+        return (Shift)resultset;
     }
     
     public void close() throws SQLException {
