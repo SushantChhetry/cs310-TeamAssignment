@@ -17,6 +17,10 @@ public class Punch {
         this.punchTypeID = pTypeID;
     }
 
+    Punch(String idNum, String terminalId, String badgeId, String originalTimeStamp, String punchTypeId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
     public int getPunchID() {
         return punchID;
     }

@@ -31,6 +31,10 @@ public class Shift {
         this.shiftLunchStop = LocalTime.of(sLunchStopHour, sLunchStopMin);
         this.shiftLunchDeduct = sLunchDeduct;
     }
+
+    Shift(String idNum, String description, String start, String stop, String interval, String gracePeriod, String dock, String lunchStart, String lunchStop, String lunchDeduct) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
     // getter methods
 
