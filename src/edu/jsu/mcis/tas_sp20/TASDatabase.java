@@ -100,7 +100,7 @@ public class TASDatabase {
                 + " shift.lunchstop, shift.lunchdeduct FROM shift "
                 + " INNER JOIN employee ON employee.shiftid = shift.id"
                 + " INNER JOIN badge ON badge.id = employee.badgeid"
-                + " WHERE badge.id = '" + badge.getBadgeID() + "'";
+                + " WHERE badge.id = '" + badge.getID() + "'";
         resultset = stmt.executeQuery(sql);
         
         return (Shift)resultset;
