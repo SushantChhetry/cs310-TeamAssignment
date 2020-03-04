@@ -172,7 +172,7 @@ public class TASDatabase {
 
             int lunchDeduct = resultset.getInt("lunchdeduct");
 
-            Shift s = new Shift(description, startHour, startMin, stopHour, stopMin, interval, gracePeriod,
+            Shift s = new Shift(description, startHour, startMin, stopHour, stopMin, gracePeriod, interval,
                     dock, lunchStartHour, lunchStartMin, lunchStopHour, lunchStopMin, lunchDeduct);
 
             return s;
@@ -230,7 +230,7 @@ public class TASDatabase {
 
             int lunchDeduct = resultset.getInt("lunchdeduct");
 
-            Shift s = new Shift(description, startHour, startMin, stopHour, stopMin, interval, gracePeriod,
+            Shift s = new Shift(description, startHour, startMin, stopHour, stopMin, gracePeriod, interval,
                     dock, lunchStartHour, lunchStartMin, lunchStopHour, lunchStopMin, lunchDeduct);
 
             return s;
