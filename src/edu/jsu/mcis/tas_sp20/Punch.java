@@ -6,20 +6,18 @@ public class Punch {
     
     private int punchID;
     private String punchTerminalID;
-    private int punchBadgeID;
+    private String punchBadgeID;
     private int punchTypeID;
     private int printOriginalTimestamp;
     
-    public Punch (int pID, String pTerminalID, int pBadgeID, int pTypeID){
+    public Punch (int pID, String pTerminalID, String pBadgeID, int pTypeID, int ptOriginalTimestamp){
         this.punchID = pID;
         this.punchTerminalID = pTerminalID;
         this.punchBadgeID = pBadgeID;
         this.punchTypeID = pTypeID;
+        this.printOriginalTimestamp = ptOriginalTimestamp;
     }
 
-    Punch(String idNum, String terminalId, String badgeId, String originalTimeStamp, String punchTypeId) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     public int getPunchID() {
         return punchID;
@@ -37,11 +35,11 @@ public class Punch {
         this.punchTerminalID = punchTerminalID;
     }
 
-    public int getPunchBadgeID() {
+    public String getPunchBadgeID() {
         return punchBadgeID;
     }
 
-    public void setPunchBadgeID(int punchBadgeID) {
+    public void setPunchBadgeID(String punchBadgeID) {
         this.punchBadgeID = punchBadgeID;
     }
 

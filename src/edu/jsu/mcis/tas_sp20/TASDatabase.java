@@ -78,7 +78,7 @@ public class TASDatabase {
             String idNum = resultset.getString(1);
             String name = resultset.getString(2);
 
-            Badge b = new Badge(name, idNum);
+            Badge b = new Badge(idNum, name);
 
             return b;
         }
@@ -107,13 +107,13 @@ public class TASDatabase {
         
         //get results
         resultset.first();
-        String idNum = resultset.getString(1);
-        String terminalId = resultset.getString(2);
-        String badgeId = resultset.getString(3);
-        String originalTimeStamp = resultset.getString(4);
-        String punchTypeId = resultset.getString(5);
+        int punchID = resultset.getInt(1);
+        String punchTerminalID = resultset.getString(2);
+        String punchBadgeID = resultset.getString(3);
+        int printOriginalTimeStamp = resultset.getInt(4);
+        int punchTypeID = resultset.getInt(5);
         
-        Punch p = new Punch(idNum, terminalId, badgeId, originalTimeStamp, punchTypeId);
+        Punch p = new Punch(punchID, punchTerminalID, punchBadgeID, printOriginalTimeStamp, punchTypeID);
         
         return p;
         }
