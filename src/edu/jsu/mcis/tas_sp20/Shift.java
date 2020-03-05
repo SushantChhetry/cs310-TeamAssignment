@@ -132,7 +132,7 @@ public class Shift {
         int totalShiftStopTime = (getShiftStop().getHour()*60) + 
                 getShiftStop().getMinute();
         
-        return (totalShiftStartTime - totalShiftStopTime);
+        return (totalShiftStopTime - totalShiftStartTime);
     }
     
     // for Lunch duration (LunchStart - LunchStop)
@@ -144,7 +144,7 @@ public class Shift {
         int totalLunchStopTime = (getShiftLunchStop().getHour()*60) +
                 getShiftLunchStop().getMinute();
         
-        return (totalLunchStartTime - totalLunchStopTime);
+        return (totalLunchStopTime - totalLunchStartTime);
     }
     
     @Override
