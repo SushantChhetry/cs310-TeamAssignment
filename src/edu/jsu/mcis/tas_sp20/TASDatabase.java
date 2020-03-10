@@ -2,6 +2,12 @@ package edu.jsu.mcis.tas_sp20;
 
 import java.sql.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
 
 public class TASDatabase {
     
@@ -257,6 +263,43 @@ public class TASDatabase {
             System.err.println("** getShift: " + e.toString());
         }
 
+        return null;
+    }
+    
+    public ArrayList<Punch> getDailyPunchList(Badge badge, long ts){
+        
+        ArrayList<Punch> list = new ArrayList<Punch>();
+        
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(ts);
+        
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd");
+        String date = format1.format(calendar.getTime());
+        calendar.add(Calendar.DATE,1);
+        String date1 = format1.format(calendar.getTime());
+        
+        try{
+            
+            //preparing Select query
+            pstSelect = conn.prepareStatement("SELECT * FROM shift WHERE badgeid = ?");
+            
+            //executing Select query
+            pstSelect.execute();
+            resultset = pstSelect.getResultSet();
+            
+            //getting result
+            resultset.first();
+            
+            
+        }
+        
+        catch (Exception e) {
+            
+            System.err.println(e.toString());
+            
+        }
+           
+        
         return null;
     }
     
