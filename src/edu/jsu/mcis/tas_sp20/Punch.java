@@ -13,7 +13,7 @@ public class Punch {
     private long originalTimeStamp;
     private String adjustmenttype;
     private String adjustedTimestamp;
-    
+        
     
     public Punch (int punchID, int punchTerminalID, String punchBadge,
             Timestamp originalTimeStamp, int punchTypeID) {
@@ -116,6 +116,104 @@ public class Punch {
     
     public String printAdjustedTimestamp() {
         return null;
+    }
+    
+    public void adjust (Shift s)
+    {
+        
+    }
+    
+    public Date grace (long shiftStart, long shiftStop)
+    {
+        GregorianCalendar graced = new GregorianCalendar();
+        graced.setTimeInMillis(originalTimeStamp);
+        
+        int pt = punchTypeID;
+        long start = shiftStart;
+        long stop = shiftStop;
+        
+        if ( pt <= 0){
+            graced.setTimeInMillis(stop);
+        }
+        if ( pt >= 1){
+            graced.setTimeInMillis(start);
+        }
+        
+        adjustmenttype = ("Shift Grace");
+        
+        return graced.getTime();
+    }
+    public Date dock (long shiftStart, long shiftStop)
+    {
+        GregorianCalendar docked = new GregorianCalendar();
+        docked.setTimeInMillis(originalTimeStamp);
+        
+        int pt = punchTypeID;
+        long start = shiftStart;
+        long stop = shiftStop;
+        
+        if ( pt <= 0){
+            
+            docked.setTimeInMillis(stop);
+            docked.add(Calendar.MINUTE, -15);
+        }
+        if ( pt >= 1){
+            
+            docked.setTimeInMillis(start);
+            docked.add(Calendar.MINUTE, 15);
+        }
+        
+        docked.set(Calendar.SECOND, 0);
+        
+        adjustmenttype = ("Shift Dock");
+        
+        return docked.getTime();
+    }
+    public Date intervalRound ()
+    {
+        GregorianCalendar rounded = new GregorianCalendar();
+        rounded.setTimeInMillis(originalTimeStamp);
+        
+        int pt = punchTypeID;
+        int minute = rounded.get(Calendar.MINUTE);
+        int adjusted = 0;
+        
+        if ( pt <= 0){
+            adjusted = roundDown(minute, 15);
+            rounded.set(Calendar.MINUTE, adjusted);
+        }
+        if ( pt >= 1){
+            
+            adjusted = roundUp(minute, 15);
+            rounded.set(Calendar.MINUTE, adjusted);
+        }
+        
+        rounded.set(Calendar.SECOND, 0);
+        
+        adjustmenttype = ("Interval Round");
+        
+        return rounded.getTime();
+    }
+    public Date none ()
+    {
+        GregorianCalendar noned = new GregorianCalendar();
+        noned.setTimeInMillis(originalTimeStamp);
+        
+        noned.set(Calendar.SECOND, 0); 
+        
+        adjustmenttype = ("None");
+            
+        return noned.getTime();
+    }
+    
+    int roundDown(int n, int m) 
+    {
+        return n >= 0 ? (n / m) * m : ((n - m + 1) / m) * m;
+    }
+    
+    int roundUp(int n, int m) 
+    {
+        return n >= 0 ? ((n + m - 1) / m) * m : (n / m) * m;
     }
             
 }
