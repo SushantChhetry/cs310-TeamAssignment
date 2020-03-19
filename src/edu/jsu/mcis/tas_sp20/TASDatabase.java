@@ -1,6 +1,7 @@
 package edu.jsu.mcis.tas_sp20;
 
 import java.sql.*;
+import java.sql.Connection;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
@@ -15,6 +16,9 @@ public class TASDatabase {
     PreparedStatement pstSelect = null, pstUpdate = null;
     ResultSet resultset = null;
     ResultSetMetaData metadata = null;
+    
+    boolean hasresults;
+    int columnCount = 0;
     
     public TASDatabase(){
         
@@ -99,52 +103,39 @@ public class TASDatabase {
     
     public Punch getPunch(int punchid){
         
+        Timestamp originalTimeStamp = null;
+        Punch p = null;
+        
         try{
             
-        // prepare statement
-        pstSelect = conn.prepareStatement("SELECT * FROM punch WHERE id = ?");
-        
-        //set params
-        pstSelect.setInt(1, punchid);
-        
-        //execute
-        pstSelect.execute();
-        resultset = pstSelect.getResultSet();
-        
-        //get results
-        resultset.first();
-        int punchID = resultset.getInt(1);
-        int punchTerminalID = resultset.getInt(2);
-        Badge punchBadge = new Badge(resultset.getString(3), "Description");
-        int punchTypeID = resultset.getInt(5);
-        
-        Punch p = new Punch(punchBadge, punchTerminalID, punchTypeID);
-        
-        // prepare statement to get timestamp
-        pstSelect = conn.prepareStatement("SELECT *, UNIX_TIMESTAMP(originaltimestamp) * 1000 AS ts FROM punch WHERE id = ?");
-        
-        //set params
-        pstSelect.setInt(1, punchid);
-        
-        //execute
-        pstSelect.execute();
-        resultset = pstSelect.getResultSet();
-        
-        //get results
-        resultset.first();
-        long punchOriginalTimestamp = resultset.getLong("ts");
-        
-        p.setOriginalTimestamp(punchOriginalTimestamp);
-        
-        
-        return p;
+            // prepare statement
+            pstSelect = conn.prepareStatement("SELECT * FROM punch WHERE id = ?");
+
+            //set params
+            pstSelect.setInt(1, punchid);
+
+            //execute
+            pstSelect.execute();
+            resultset = pstSelect.getResultSet();
+
+            //get results
+            resultset.first();
+            int punchID = resultset.getInt(1);
+            int punchTerminalID = resultset.getInt(2);
+            String punchBadge = resultset.getString(3);
+            originalTimeStamp = resultset.getTimestamp(4);
+            int punchTypeID = resultset.getInt(5);
+
+            p = new Punch(punchID, punchTerminalID, punchBadge,
+                    originalTimeStamp, punchTypeID);
+            
         }
         
         catch(Exception e){
             System.err.println("** getPunch: " + e.toString());
         }
 
-        return null;
+        return p;
     }
     
     public Shift getShift(Badge badge){
@@ -277,18 +268,42 @@ public class TASDatabase {
         String date = format1.format(calendar.getTime());
         calendar.add(Calendar.DATE,1);
         String date1 = format1.format(calendar.getTime());
+        int lastPunchType = 0;
         
         try{
             
             //preparing Select query
-            pstSelect = conn.prepareStatement("SELECT * FROM shift WHERE badgeid = ?");
+           
+            pstSelect = conn.prepareStatement("SELECT id,terminalid,badgeid,originaltimestamp,"
+                    + "punchtypeid FROM tas.punch WHERE badgeid = '"
+                    + badge.getID() + "' AND originaltimestamp LIKE '%"
+                    + date + "%'");
             
             //executing Select query
-            pstSelect.execute();
+            hasresults = pstSelect.execute();                
             resultset = pstSelect.getResultSet();
+            metadata = resultset.getMetaData();
+            columnCount = metadata.getColumnCount(); 
             
             //getting result
-            resultset.first();
+            System.out.println("Getting Results...");
+            resultset = pstSelect.getResultSet();                    
+                                      
+            for(int i = 1; i < columnCount; i++) {
+
+                if (resultset.isLast()) {
+                    lastPunchType = resultset.getInt(5);
+                    break;  
+
+                }
+
+                resultset.next();                       
+                list.add(new Punch(resultset.getInt("id")
+                        ,resultset.getInt("terminalid"),resultset.getString("badgeid")
+                        ,resultset.getTimestamp("originaltimestamp")
+                        ,resultset.getInt("punchtypeid")));
+
+            }
             
             
         }
@@ -298,9 +313,92 @@ public class TASDatabase {
             System.err.println(e.toString());
             
         }
+        
+        /*Closing other database objects*/
+        
+        finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; 
+            } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; 
+            } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; 
+            } catch (Exception e) {} }
+            
+        }
+        
+        try {
+        
+            /* Preparing Select Query */
+          
+            pstSelect = conn.prepareStatement("SELECT id,terminalid,badgeid,originaltimestamp,"
+                    + "punchtypeid FROM tas.punch WHERE badgeid = '"
+                    + badge.getID() + "' AND originaltimestamp LIKE '%"
+                    + date1 + "%'");
+                
+            /* Executing Select Query */
+            
+            hasresults = pstSelect.execute();                
+            resultset = pstSelect.getResultSet();
+            metadata = resultset.getMetaData();
+            columnCount = metadata.getColumnCount(); 
+            
+            /* Getting Results */
+   
+            System.out.println("Getting Results ...");
+            
+                    /* Getting ResultSet */
+                        
+                    resultset = pstSelect.getResultSet();                    
+                                      
+                    for(int i = 1; i < columnCount; i++) {
+                        
+                        if (resultset.isLast() ) {
+                            
+                            break;  
+                            
+                        }
+                        
+                        resultset.next(); 
+                        
+                        if (resultset.getInt(5) == TASLogic.CLOCKOUT && lastPunchType == TASLogic.CLOCKIN) {
+                                                 
+                        list.add(new Punch(resultset.getInt(1)
+                                ,resultset.getInt(2),resultset.getString(3)
+                                ,resultset.getTimestamp(4)
+                                ,resultset.getInt(5)));
+                        
+                        }
+                        
+                    }
+        }        
+        
+        catch (Exception e) {
+            
+            System.err.println(e.toString());
+            
+        }
+        
+        /* Closeing other Database Objects */
+        
+        finally {
+            
+            if (resultset != null) { try { resultset.close(); resultset = null; 
+            } catch (Exception e) {} }
+            
+            if (pstSelect != null) { try { pstSelect.close(); pstSelect = null; 
+            } catch (Exception e) {} }
+            
+            if (pstUpdate != null) { try { pstUpdate.close(); pstUpdate = null; 
+            } catch (Exception e) {} }
+            
+        }
+        
+        return list;
            
         
-        return null;
     }
     
     public void close() {

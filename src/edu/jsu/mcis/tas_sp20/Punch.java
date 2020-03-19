@@ -1,34 +1,47 @@
 package edu.jsu.mcis.tas_sp20;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Punch {
     
-    private Badge punchBadge;
+    private String punchBadge;
     private int punchID;
     private int punchTerminalID;
     private int punchTypeID;
-    private long originalTimestamp;
+    private long originalTimeStamp;
     private String adjustmenttype;
     private String adjustedTimestamp;
     
     
+    public Punch (int punchID, int punchTerminalID, String punchBadge,
+            Timestamp originalTimeStamp, int punchTypeID) {
+    
+        if(punchID >= 0){this.punchID = punchID;}
+        this.punchTerminalID = punchTerminalID;
+        this.punchBadge = punchBadge;
+        this.originalTimeStamp = originalTimeStamp.getTime();
+        this.punchTypeID = punchTypeID;
+        
+    }
+    
+    
     public Punch (Badge badge, int pTerminalID, int pTypeID){
-        this.punchBadge = badge;
+        this.punchBadge = badge.getID();
         this.punchID = 0;
         this.punchTerminalID = pTerminalID;
         this.punchTypeID = pTypeID;
-        this.originalTimestamp = 0;
+        this.originalTimeStamp = 0;
         this.adjustedTimestamp = null;
     }
 
     
-    public Badge getBadge() {
+    public String getBadgeid() {
         return punchBadge;
     }
     
-    public void setBadge(Badge newBadge) {
+    public void setBadge(String newBadge) {
         this.punchBadge = newBadge;
     }
     
@@ -40,7 +53,7 @@ public class Punch {
         this.punchID = punchID;
     }
 
-    public int getPunchTerminalID() {
+    public int getTerminalid() {
         return punchTerminalID;
     }
 
@@ -48,7 +61,7 @@ public class Punch {
         this.punchTerminalID = punchTerminalID;
     }
 
-    public int getPunchTypeID() {
+    public int getPunchtypeid() {
         return punchTypeID;
     }
 
@@ -56,21 +69,21 @@ public class Punch {
         this.punchTypeID = punchTypeID;
     }
 
-    public long getOriginalTimestamp() {
-        return originalTimestamp;
+    public long getOriginaltimestamp() {
+        return originalTimeStamp;
     }
 
-    public void setOriginalTimestamp(long newOriginalTimestamp) {
-        this.originalTimestamp = newOriginalTimestamp;
+    public void setOriginalTimeStamp(long newOriginalTimeStamp) {
+        this.originalTimeStamp = newOriginalTimeStamp;
     }
     
     public String printOriginalTimestamp(){
         StringBuilder sb = new StringBuilder();
         GregorianCalendar gc = new GregorianCalendar();
-        gc.setTimeInMillis(originalTimestamp);
+        gc.setTimeInMillis(originalTimeStamp);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
         
-        sb.append("#").append(punchBadge.getID());
+        sb.append("#").append(punchBadge);
 
         switch (punchTypeID) {
             case 0:
