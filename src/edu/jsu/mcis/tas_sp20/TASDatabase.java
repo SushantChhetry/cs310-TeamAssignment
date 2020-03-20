@@ -257,6 +257,44 @@ public class TASDatabase {
         return null;
     }
     
+    public int insertPunch(Punch p) {   
+        
+        String badgeID = p.getBadgeid();
+        int terminalID = p.getTerminalid();
+        int punchTypeID = p.getPunchtypeid();
+        int punchId = 1;
+        
+        GregorianCalendar ots = new GregorianCalendar();
+        ots.setTimeInMillis(p.getOriginaltimestamp());
+        String originaltimestamp = (new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")).format(ots.getTime());
+        
+        PreparedStatement pst;
+        String query;
+        ResultSet resultSet;
+        
+        try {
+     
+            query = "INSERT INTO punch (terminalid, badgeid, originaltimestamp, punchtypeid) VALUES (?, ?, ?, ?)";
+  
+            pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            pst.setInt(1, terminalID);
+            pst.setString(2, badgeID);
+            pst.setString(3, originaltimestamp);
+            pst.setInt(4, punchTypeID);
+            
+            pst.execute();
+            resultSet = pst.getGeneratedKeys();
+            resultSet.first();
+            return resultSet.getInt(1);
+   
+        }
+        catch (Exception e) {
+            System.err.println("** insertPunch: " + e.toString());
+        }
+        
+        return punchId;
+    }
+    
     public ArrayList<Punch> getDailyPunchList(Badge badge, long ts){
         
         ArrayList<Punch> list = new ArrayList<Punch>();
