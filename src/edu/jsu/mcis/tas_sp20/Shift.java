@@ -50,11 +50,11 @@ public class Shift {
         return shiftStop;
     }
     public int getShiftStopHour(){
-        return getShiftStart().getHour();
+        return getShiftStop().getHour();
     }
     
     public int getShiftStopMin(){
-        return getShiftStart().getMinute();
+        return getShiftStop().getMinute();
     }
     
     public int getShiftGrace() {
@@ -73,8 +73,24 @@ public class Shift {
         return shiftLunchStart;
     }
     
+    public int getLunchStartHour(){
+        return getShiftLunchStart().getHour();
+    }
+    
+    public int getLunchStartMin(){
+        return getShiftLunchStart().getMinute();
+    }
+    
     public LocalTime getShiftLunchStop() {
         return shiftLunchStop;
+    }
+    
+    public int getLunchStopHour(){
+        return getShiftLunchStop().getHour();
+    }
+    
+    public int getLunchStopMin(){
+        return getShiftLunchStop().getMinute();
     }
     
     public int getShiftLunchDeduct() {

@@ -2,6 +2,7 @@ package edu.jsu.mcis.tas_sp20;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Punch {
@@ -106,21 +107,124 @@ public class Punch {
         return (sb.toString().toUpperCase());
     }
     
-    public String getAdjustedTimestamp() {
-        return adjustedTimestamp;
+    public String adjustTimestamp(GregorianCalendar gc, String adjustmentnote)
+    {
+        StringBuilder sb = new StringBuilder();
+        //GregorianCalendar gc = new GregorianCalendar();
+        //gc.setTimeInMillis(timestamp);
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
+        
+        sb.append("#").append(punchBadge);
+
+        switch (punchTypeID) {
+            case 0:
+                sb.append(" CLOCKED OUT: ");
+                break;
+            case 1:
+                sb.append(" CLOCKED IN: ");
+                break;
+            case 2:
+                sb.append(" TIMED OUT: ");
+                break;
+            default:
+                sb.append(" ERROR ");
+                break;
+        }
+        
+        String ots = sdf.format(gc.getTime()).toUpperCase();
+        sb.append(ots);
+        sb.append(" ").append(adjustmentnote);
+
+        return (sb.toString());
     }
+    
+    
+    //public String getAdjustedTimestamp() {
+    //    return adjustedTimestamp;
+    //}
     
     public void setAdjustedTimestamp(String adjustedTimestamp) {
         this.adjustedTimestamp = adjustedTimestamp;
     }
     
     public String printAdjustedTimestamp() {
-        return null;
+        return adjustedTimestamp;
     }
     
     public void adjust (Shift s)
     {
+        GregorianCalendar p = new GregorianCalendar();
+        p.setTimeInMillis(originalTimeStamp);
+        LocalTime ltP = LocalTime.of(p.get(Calendar.HOUR_OF_DAY), p.get(Calendar.MINUTE), p.get(Calendar.SECOND));
         
+        LocalTime shiftStart = s.getShiftStart();
+        LocalTime shiftStop = s.getShiftStop();
+        long interval = s.getShiftInterval();
+        LocalTime lunchStart = s.getShiftLunchStart();
+        LocalTime lunchStop = s.getShiftLunchStop();
+        
+        System.out.println(ltP.toString());
+        
+        switch (punchTypeID) {
+            case 0:
+                if (ltP.isAfter(shiftStop.minusSeconds(1)))
+                {
+                    if (ltP.isBefore(shiftStop.plusMinutes(interval).plusSeconds(1)))
+                    {
+                        p.set(Calendar.HOUR_OF_DAY, s.getShiftStopHour());
+                        p.set(Calendar.MINUTE, s.getShiftStopMin());
+                        p.set(Calendar.SECOND, 0);
+                    
+                        adjustmenttype = ("(Shift Stop)");
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }
+                    
+                    else
+                    {
+                        adjustmenttype = ("(WIP-0)");
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }
+                } 
+                else if (ltP.isBefore(lunchStop.plusSeconds(1)) && ltP.isAfter(lunchStart.minusSeconds(1)))
+                {
+                    p.set(Calendar.HOUR_OF_DAY, s.getLunchStartHour());
+                    p.set(Calendar.MINUTE, s.getLunchStartMin());
+                    p.set(Calendar.SECOND, 0);
+                        
+                    adjustmenttype = ("(Lunch Start)");
+                    setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                }
+                break;
+                
+            case 1:
+                if (ltP.isBefore(shiftStart.plusSeconds(1)))
+                {
+                    if (ltP.isAfter(shiftStart.minusMinutes(interval).minusSeconds(1)))
+                    {
+                        p.set(Calendar.HOUR_OF_DAY, s.getShiftStartHour());
+                        p.set(Calendar.MINUTE, s.getShiftStartMin());
+                        p.set(Calendar.SECOND, 0);
+
+                        adjustmenttype = ("(Shift Start)");
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }
+                    else
+                    {
+                        adjustmenttype = ("(WIP-1)");
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }    
+                }
+                else if (ltP.isBefore(lunchStop.plusSeconds(1)) && ltP.isAfter(lunchStart.minusSeconds(1)))
+                {
+                    p.set(Calendar.HOUR_OF_DAY, s.getLunchStopHour());
+                    p.set(Calendar.MINUTE, s.getLunchStopMin());
+                    p.set(Calendar.SECOND, 0);
+                        
+                    adjustmenttype = ("(Lunch Stop)");
+                    setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                }
+                break;
+        }
     }
     
     public Date grace (long shiftStart, long shiftStop)
@@ -139,7 +243,7 @@ public class Punch {
             graced.setTimeInMillis(start);
         }
         
-        adjustmenttype = ("Shift Grace");
+        adjustmenttype = ("(Shift Grace)");
         
         return graced.getTime();
     }
@@ -165,7 +269,7 @@ public class Punch {
         
         docked.set(Calendar.SECOND, 0);
         
-        adjustmenttype = ("Shift Dock");
+        adjustmenttype = ("(Shift Dock)");
         
         return docked.getTime();
     }
@@ -190,7 +294,7 @@ public class Punch {
         
         rounded.set(Calendar.SECOND, 0);
         
-        adjustmenttype = ("Interval Round");
+        adjustmenttype = ("(Interval Round)");
         
         return rounded.getTime();
     }
@@ -201,7 +305,7 @@ public class Punch {
         
         noned.set(Calendar.SECOND, 0); 
         
-        adjustmenttype = ("None");
+        adjustmenttype = ("(None)");
             
         return noned.getTime();
     }
