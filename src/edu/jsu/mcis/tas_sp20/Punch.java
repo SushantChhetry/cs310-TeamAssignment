@@ -110,8 +110,6 @@ public class Punch {
     public String adjustTimestamp(GregorianCalendar gc, String adjustmentnote)
     {
         StringBuilder sb = new StringBuilder();
-        //GregorianCalendar gc = new GregorianCalendar();
-        //gc.setTimeInMillis(timestamp);
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MM/dd/yyyy HH:mm:ss");
         
         sb.append("#").append(punchBadge);
@@ -138,11 +136,6 @@ public class Punch {
         return (sb.toString());
     }
     
-    
-    //public String getAdjustedTimestamp() {
-    //    return adjustedTimestamp;
-    //}
-    
     public void setAdjustedTimestamp(String adjustedTimestamp) {
         this.adjustedTimestamp = adjustedTimestamp;
     }
@@ -166,8 +159,16 @@ public class Punch {
         System.out.println(ltP.toString());
         
         switch (punchTypeID) {
+            // Clock Out //
             case 0:
-                if (ltP.isAfter(shiftStop.minusSeconds(1)))
+                if (p.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || p.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+                {
+                    p.set(Calendar.SECOND, 0);
+                    
+                    adjustmenttype = ("(Interval Round)");
+                    setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                }
+                else if (ltP.isAfter(shiftStop.minusSeconds(1)))
                 {
                     if (ltP.isBefore(shiftStop.plusMinutes(interval).plusSeconds(1)))
                     {
@@ -181,7 +182,7 @@ public class Punch {
                     
                     else
                     {
-                        adjustmenttype = ("(WIP-0)");
+                        adjustmenttype = ("(WIP-0-Interval Round)");
                         setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
                     }
                 } 
@@ -194,10 +195,40 @@ public class Punch {
                     adjustmenttype = ("(Lunch Start)");
                     setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
                 }
+                else if (ltP.isBefore(shiftStop))
+                {
+                    if (ltP.isAfter(shiftStop.minusMinutes(s.getShiftGrace()).minusSeconds(1)))
+                    {
+                        p.set(Calendar.HOUR_OF_DAY, s.getShiftStopHour());
+                        p.set(Calendar.MINUTE, s.getShiftStopMin());
+                        p.set(Calendar.SECOND, 0);
+                    
+                        adjustmenttype = ("(Shift Stop)"); // Grace Period
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }
+                    else
+                    {
+                        p.set(Calendar.HOUR_OF_DAY, s.getShiftStopHour());
+                        p.set(Calendar.MINUTE, s.getShiftStopMin());
+                        p.add(Calendar.MINUTE, -(s.getShiftDock()));
+                        p.set(Calendar.SECOND, 0);
+                    
+                        adjustmenttype = ("(Shift Dock)");
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }
+                }
                 break;
                 
+            // Clock In //
             case 1:
-                if (ltP.isBefore(shiftStart.plusSeconds(1)))
+                if (p.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || p.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY)
+                {
+                    p.set(Calendar.SECOND, 0);
+                    
+                    adjustmenttype = ("(Interval Round)");
+                    setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                }
+                else if (ltP.isBefore(shiftStart.plusSeconds(1)))
                 {
                     if (ltP.isAfter(shiftStart.minusMinutes(interval).minusSeconds(1)))
                     {
@@ -210,7 +241,7 @@ public class Punch {
                     }
                     else
                     {
-                        adjustmenttype = ("(WIP-1)");
+                        adjustmenttype = ("(WIP-1-Interval Round)");
                         setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
                     }    
                 }
@@ -222,6 +253,28 @@ public class Punch {
                         
                     adjustmenttype = ("(Lunch Stop)");
                     setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                }
+                else if (ltP.isAfter(shiftStart))
+                {
+                    if (ltP.isBefore(shiftStart.plusMinutes(s.getShiftGrace()).plusSeconds(1)))
+                    {
+                        p.set(Calendar.HOUR_OF_DAY, s.getShiftStartHour());
+                        p.set(Calendar.MINUTE, s.getShiftStartMin());
+                        p.set(Calendar.SECOND, 0);
+                    
+                        adjustmenttype = ("(Shift Start)"); // Grace Period
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }
+                    else
+                    {
+                        p.set(Calendar.HOUR_OF_DAY, s.getShiftStartHour());
+                        p.set(Calendar.MINUTE, s.getShiftStartMin());
+                        p.add(Calendar.MINUTE, s.getShiftDock());
+                        p.set(Calendar.SECOND, 0);
+                    
+                        adjustmenttype = ("(Shift Dock)");
+                        setAdjustedTimestamp(adjustTimestamp(p, adjustmenttype));
+                    }
                 }
                 break;
         }
