@@ -270,18 +270,20 @@ public class TASDatabase {
         
         PreparedStatement pst;
         String query;
+        int result = 0;
         ResultSet resultSet;
         
         try {
      
             query = "INSERT INTO punch (terminalid, badgeid, originaltimestamp, punchtypeid) VALUES (?, ?, ?, ?)";
   
-            pst = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            pst = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             pst.setInt(1, terminalID);
             pst.setString(2, badgeID);
             pst.setString(3, originaltimestamp);
             pst.setInt(4, punchTypeID);
             
+                        
             pst.execute();
             resultSet = pst.getGeneratedKeys();
             resultSet.first();

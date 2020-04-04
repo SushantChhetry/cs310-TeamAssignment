@@ -33,7 +33,7 @@ public class Punch {
         this.punchID = 0;
         this.punchTerminalID = pTerminalID;
         this.punchTypeID = pTypeID;
-        this.originalTimeStamp = 0;
+        this.originalTimeStamp = System.currentTimeMillis();
         this.adjustedTimestamp = null;
     }
 
