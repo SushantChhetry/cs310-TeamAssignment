@@ -25,7 +25,7 @@ public class TASLogic {
         for (Punch punch : dailypunchlist) {
             switch (punch.getPunchtypeid()) {
                 case 0:
-                    int minutes = (int)((dailypunchlist.get(0).getOriginaltimestamp() - inTime) / 60000);
+                    int minutes = (int)((dailypunchlist.get(1).getOriginaltimestamp() - inTime) / 60000);
                     if (!isWeekend){
                         if (minutes > shift.getShiftLunchDeduct()) {
                             minutes -= shift.totalLunchDuration();
